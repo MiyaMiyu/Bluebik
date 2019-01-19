@@ -1,0 +1,73 @@
+<html>
+<head>
+    <title>Shorten URL</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+</head>
+<body class="text-center">
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+    <header class="masthead mb-auto">
+    <div class="inner">
+        <h3 class="masthead-brand">Shorten URL  </h3>
+        <nav class="nav nav-masthead justify-content-center">
+        <a class="nav-link active" href="/">Home</a>
+        <a class="nav-link" href="#">Contact</a>
+        <a class="nav-link" href="/login">Login</a>
+        </nav>
+    </div>
+    </header>
+    <div class="container">
+        <form>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control form-control-lg" placeholder="Paste a link to shorten it" id="long-url">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary btn-lg" type="button" id="btn-shorten">Shorten</button>
+                </div>
+            </div> 
+        </form>
+        <div class="alert text-left bg-transparent" id="result">
+        </div>
+    </div>
+    <footer class="mastfoot mt-auto">
+        <div class="inner">
+            <p>Cover template for <a href="https://getbootstrap.com/">Bootstrap</a>, by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+        </div>
+    </footer>
+</div>
+
+
+</body>
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script>
+$(function() {
+    var $longUrl = $("#long-url");
+    var shortenUrl = "https://api-ssl.bitly.com/v3/shorten?access_token=e0e21cdd186a7ecb2363ab54baa9b3106e386d72&longUrl=";
+    var $result = $("#result");
+    $("#btn-shorten").click(function(e){
+        var longUrl = $longUrl.val();
+        if(longUrl){
+            var http = "http://";
+            if(longUrl.indexOf(http) == -1){
+                longUrl = http.concat(longUrl);
+            }
+            var url = shortenUrl+longUrl;
+            $.get( url )
+            .done(function( data ) {
+                if(data){
+                    $result.removeClass();
+                    if(data.status_code == "200"){
+                        var result = data.data;
+                        $result.addClass("alert alert-success text-left").empty().append("<div class='p-2'><a href='"+result.long_url+"' class='text-secondary'>"+result.long_url+"</a></div><div class='p-2'><a href='"+result.url+"' class='font-weight-bold'>"+result.url+"</a></div>");
+                    }
+                    else{
+                        $result.addClass("alert alert-danger text-left").empty().append("<p class=''>Error: "+data.status_txt+"</p>");
+                    }
+                }
+            });
+        }
+    });
+});
+</script>
+</html>
